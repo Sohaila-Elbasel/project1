@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  Books
+{% endblock %}
+
+{% block content %}
+  <div class="index-container">
+    <div class="row justify-content-md-center align-items-center">
+      <div class="col-md-10 text-center">
+        <h1 class="mb-4">FIND YOUR NEXT BOOK</h1>
+        <form class="form-inline justify-content-md-center" action="/result" method="post">
+          <div class="form-group col-10 mb-2">
+            <input class="form-control col-10 mb-2" type="text" name="search" placeholder="ISBN, Book title, Author name">
+            <button type="submit" class="btn btn-success mb-2">SEARCH</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  Search Result
+{% endblock %}
+
+{% block content %}
+  <div class="row mt-5">
+    {% if keywords %}
+      {% for keyword in keywords %}
+        <div class="col-sm-6 mb-2">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ keyword }}</h5>
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-success">Show book</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center">
+        <h5>Your search didn't match any book</h5>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
