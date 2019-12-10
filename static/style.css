@@ -2,3 +2,11 @@ body .index-container .row{
   height: 100vh;
   margin-top: -100px;
 }
+
+nav .right-btn{
+  justify-content:flex-end;
+}
+
+nav .right-btn span{
+  font-size: 1.2rem;
+}

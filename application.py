@@ -60,18 +60,32 @@ def register():
 @app.route('/login', methods=["POST", "GET"])
 def login():
     if request.method == "POST":
-        #check is username is valid
+        #check if username is valid
         username = request.form['username']
+        password = request.form['password']
         check_user = db.execute('SELECT username FROM users WHERE username = :username', {'username': username}).rowcount
         if check_user == 0:
             flash('This username does not exist')
             return render_template('login.html')
 
-        session['username'] = request.form['username']
-        session['password'] = request.form['password']
-        return f"Hi {session['username']}"
+        #Check Password
+        check_pass = db.execute('SELECT * From users WHERE username = :username', {'username': username}).fetchone()
+        if check_pass['password'] == password:
+            flash(f'HI {username}')
+            session['username'] = username
+            return redirect(url_for('index'))
+        else:
+            flash('Password does not match')
+            return render_template('login.html')
+
+    #GET request
     return render_template('login.html')
 
+#LOGOUT
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 #Search result route
 @app.route("/result", methods=["POST"])

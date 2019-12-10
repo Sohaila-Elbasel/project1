@@ -14,7 +14,16 @@
     <!-- Navbar -->
     <nav class="navbar navbar-light bg-light">
       <h2><a href="{{ url_for('index') }}" class="navbar-brand text-success">NEXT BOOK</a></h2>
-        <a class="btn btn-outline-success my-2 my-sm-0" >LOGOUT</a>
+      <div class = "right-btn">
+        {% if session['username'] %}
+          <span class=" my-2 my-sm-0 mr-2" >{{ session['username'] }}</span>
+          <a href="{{ url_for('logout') }}" class="btn btn-outline-success my-2 my-sm-0" >LOGOUT</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn btn-outline-success my-2 my-sm-0" >Login</a>
+          <a href="{{ url_for('register') }}" class="btn btn-outline-success my-2 my-sm-0" >Register</a>
+        {% endif %}
+      </div>
+
     </nav>
     <!-- end of navbar -->
 
@@ -29,7 +38,7 @@
         </div>
         {% endif %}
       {% endwith %}
-      
+
       {% block content %}{% endblock %}
     </div>
 
