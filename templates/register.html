@@ -1,11 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-  Login
+  register
 {% endblock %}
 
 {% block content %}
-  <form class="mt-5">
+  <form class="mt-5" action="/register" method="post">
     <div class="form-group">
       <label for="usernameInput">Username</label>
       <input type="text" class="form-control" id="usernameInput" placeholder="Enter Your username" name='username'>

@@ -1,15 +1,14 @@
 import os
 
-from flask import Flask, session, render_template, request, redirect, url_for
+from flask import Flask, session, render_template, request, redirect, url_for, flash
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 import requests
 
-res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "2Pge4GCffgiBlwSEyxdD8g", "isbns": "9781632168146"})
-print(res.json())
 
 app = Flask(__name__)
+app.secret_key = 'DODGE'
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
@@ -29,15 +28,49 @@ db = scoped_session(sessionmaker(bind=engine))
 def index():
     return render_template('index.html')
 
-#Login route
-@app.route('/login')
-def login():
-    return render_template('login.html')
-
 #Register route
-@app.route('/register')
+@app.route('/register', methods = ['POST', 'GET'])
 def register():
+    if request.method == 'POST':
+        #Check for password
+        if request.form['password'] == request.form['password2']:
+            username = request.form['username']
+            password = request.form['password']
+
+            #check if user already register
+            check_user = db.execute('SELECT username FROM users WHERE username = :username', {'username': username}).rowcount
+            if check_user == 0:
+                db.execute("INSERT INTO users (username, password) VALUES (:username, :password)", {'username': username, 'password': password})
+                db.commit()
+
+                #Register success
+                flash(f'{username} is successfully register')
+                return redirect(url_for('login'))
+            else:
+                flash('This user is already exist')
+        else:
+            #password doesn't match
+            flash("Password does not match")
+            return render_template('register.html')
+
+    #return register page in get request
     return render_template('register.html')
+
+#Login route
+@app.route('/login', methods=["POST", "GET"])
+def login():
+    if request.method == "POST":
+        #check is username is valid
+        username = request.form['username']
+        check_user = db.execute('SELECT username FROM users WHERE username = :username', {'username': username}).rowcount
+        if check_user == 0:
+            flash('This username does not exist')
+            return render_template('login.html')
+
+        session['username'] = request.form['username']
+        session['password'] = request.form['password']
+        return f"Hi {session['username']}"
+    return render_template('login.html')
 
 
 #Search result route
