@@ -23,10 +23,6 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-#index route
-@app.route("/")
-def index():
-    return render_template('index.html')
 
 #Register route
 @app.route('/register', methods = ['POST', 'GET'])
@@ -63,14 +59,13 @@ def login():
         #check if username is valid
         username = request.form['username']
         password = request.form['password']
-        check_user = db.execute('SELECT username FROM users WHERE username = :username', {'username': username}).rowcount
-        if check_user == 0:
+        check_user = db.execute('SELECT * From users WHERE username = :username', {'username': username}).fetchone()
+        if check_user == None:
             flash('This username does not exist')
             return render_template('login.html')
 
         #Check Password
-        check_pass = db.execute('SELECT * From users WHERE username = :username', {'username': username}).fetchone()
-        if check_pass['password'] == password:
+        if check_user['password'] == password:
             flash(f'HI {username}')
             session['username'] = username
             return redirect(url_for('index'))
@@ -87,18 +82,16 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
-#Search result route
-@app.route("/result", methods=["POST"])
-def result():
+#index route
+@app.route("/", methods=["POST", "GET"])
+def index():
     if request.method == 'POST':
         keyword = request.form.get("search", None)
-        if keyword == None or keyword == '':
-            return redirect(url_for('index'))
+        if keyword is not None or keyword != '':
+            result = db.execute("SELECT * FROM books WHERE title LIKE :title OR isbn LIKE :isbn OR author LIKE :author", {'title': f'%{keyword}%', 'isbn': f'%{keyword}%', 'author': f'%{keyword}%'}).fetchall()
+            return render_template('result.html', keywords=result)
 
-        #Search in database
-
-        return render_template('result.html', keywords=keyword)
-
+    return render_template('index.html')
 
 if __name__ =='__main__':
     app.run(debug=True)
