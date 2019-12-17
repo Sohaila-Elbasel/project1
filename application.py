@@ -93,5 +93,14 @@ def index():
 
     return render_template('index.html')
 
+
+#Book Page
+@app.route("/result/<string:book_name>")
+def book_page(book_name):
+    book = db.execute("SELECT * FROM books WHERE title = :title ", {'title': book_name}).fetchone()
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "2Pge4GCffgiBlwSEyxdD8g", "isbns": book.isbn})
+    res = res.json()['books'][0]
+    return render_template('book_page.html', book_name = book_name, res = res, book = book)
+
 if __name__ =='__main__':
     app.run(debug=True)
