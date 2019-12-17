@@ -1,13 +1,13 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-  {{ book_name }}
+  {{ book.title }}
 {% endblock %}
 
 {% block content %}
   {% if res %}
     <div class="">
-      <h4 class="d-block p-2 bg-success text-white mt-3 rounded">{{book_name}}</h4>
+      <h4 class="d-block p-2 bg-success text-white mt-3 rounded">{{book.title}}</h4>
       <h6><span class="text-success mt-3">Author: </span>{{ book.author }}</h6>
       <h6><span class="text-success mt-3">ISBN: </span>{{ book.isbn }}</h6>
       <h6><span class="text-success mt-3">publication year: </span>{{ book.year }}</h6>
@@ -20,15 +20,10 @@
         <div class="mt-3 d-inline p-2">Number Of Ratings  <span class="rounded p-2 bg-success text-white"> {{ res.ratings_count }} </span></div>
       {% endif %}
       {% if session['username'] %}
-        <div class="mt-4 p-2">
-          <h5 class="p-4 border-top">Your Review</h5>
-          {% if comment %}
-            <span>Rate: {{ rate }}</span>
-            <p class="col-10 card-header p-2 border rounded mb-3">{{ comment }}</p>
-
-          {% else %}
-              <form class="" action="/result/{{ book_name }}" method="post">
+          {% if not comment %}
+              <form class="mt-4 p-2 border-top " action="/result/{{ book_isbn }}" method="post">
                 <div class="form-group row">
+                  <h6 class="col-4 m-4">Make a review</h6>
                   <input class="form-control col-8 mr-2" type="text" name="comment" placeholder="Put your comment here...." value="">
                   <select class="form-control col-1 mr-2" name="rate">
                     <option value="1">1</option>
@@ -46,7 +41,7 @@
 
       {% if all_comments %}
         {% for this_comment in all_comments %}
-          <div class="row mb-2 mt-3">
+          <div class="row mb-2 mt-4 p-2 border-top">
             <h5 class="col-2">{{ this_comment.username }}</h5>
             <span>Rate: {{ this_comment.rate }}</span>
             <p class="col-10 card-header p-2 border rounded">{{ this_comment.text }} </p>

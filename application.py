@@ -97,9 +97,9 @@ def index():
 
 
 #Book Page
-@app.route("/result/<string:book_name>", methods=["POST", "GET"])
-def book_page(book_name):
-    book = db.execute("SELECT * FROM books WHERE title = :title ", {'title': book_name}).fetchone()
+@app.route("/result/<string:book_isbn>", methods=["POST", "GET"])
+def book_page(book_isbn):
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn ", {'isbn': book_isbn}).fetchone()
     res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "2Pge4GCffgiBlwSEyxdD8g", "isbns": book.isbn})
     res = res.json()['books'][0]
     comments = db.execute("SELECT * FROM comments, users WHERE book_id = :book_id AND users.user_id = comments.user_id", {'book_id': book.book_id}).fetchall()
@@ -111,8 +111,7 @@ def book_page(book_name):
         if comment is not None and comment != '':
             db.execute("INSERT INTO comments (text, user_id, book_id, rate) VALUES (:text, :user_id, :book_id, :rate)", {'text': comment, 'user_id': session['user_id'], 'book_id': book.book_id, 'rate': int(rate)})
             db.commit()
-
-        return render_template('book_page.html', book_name = book.title, res = res, book = book, comment = comment, rate = rate, all_comments = comments)
+        return redirect(url_for('book_page', book_isbn = book.isbn))
     #Check if user make a comment on this book
     if request.method == 'GET':
         comment = None
@@ -124,7 +123,7 @@ def book_page(book_name):
                 rate = check_comment.rate
         except:
             pass
-        return render_template('book_page.html', book_name = book_name, res = res, book = book, comment = comment, all_comments = comments, rate = rate)
+        return render_template('book_page.html', book_isbn = book.isbn, res = res, book = book, comment = comment, all_comments = comments, rate = rate)
 
 if __name__ =='__main__':
     app.run(debug=True)
