@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session, render_template, request, redirect, url_for, flash
+from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -124,6 +124,23 @@ def book_page(book_isbn):
         except:
             pass
         return render_template('book_page.html', book_isbn = book.isbn, res = res, book = book, comment = comment, all_comments = comments, rate = rate)
+
+@app.route("/api/<string:isbn>")
+def api(isbn):
+    try:
+        book = db.execute("SELECT * FROM books WHERE isbn = :isbn ", {'isbn': isbn}).fetchone()
+        book_info = {}
+        book_info['title'] = book.title
+        book_info['author'] = book.author
+        book_info['year'] = book.year
+        book_info['isbn'] = book.isbn
+        res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "2Pge4GCffgiBlwSEyxdD8g", "isbns": isbn})
+        res = res.json()['books'][0]
+        book_info['review_count'] = res['work_ratings_count']
+        book_info['average_score'] = res['average_rating']
+        return jsonify(book_info)
+    except:
+        abort(404)
 
 if __name__ =='__main__':
     app.run(debug=True)

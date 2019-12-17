@@ -17,7 +17,7 @@
       </div>
       {% if  res.average_rating %}
         <div class="mt-3 d-inline p-2">The Average Rating <span class="rounded p-2 bg-success text-white"> {{ res.average_rating }} </span></div>
-        <div class="mt-3 d-inline p-2">Number Of Ratings  <span class="rounded p-2 bg-success text-white"> {{ res.ratings_count }} </span></div>
+        <div class="mt-3 d-inline p-2">Number Of Ratings  <span class="rounded p-2 bg-success text-white"> {{ res.work_ratings_count }} </span></div>
       {% endif %}
       {% if session['username'] %}
           {% if not comment %}
